@@ -244,15 +244,15 @@ export class BackupVerificationService {
       });
 
       this.logger.log(`Restoration test output: ${stdout}`);
-      
+
       // Look for User and Property counts in output
       const userCountMatch = stdout.match(/Restored User Count: (\d+)/);
       const propertyCountMatch = stdout.match(/Restored Property Count: (\d+)/);
 
       if (userCountMatch && propertyCountMatch) {
-          this.logger.log(`Restoration test PASSED: Users=${userCountMatch[1]}, Properties=${propertyCountMatch[1]}`);
+        this.logger.log(`Restoration test PASSED: Users=${userCountMatch[1]}, Properties=${propertyCountMatch[1]}`);
       } else {
-          this.logger.warn('Restoration test completed but count regex failed');
+        this.logger.warn('Restoration test completed but count regex failed');
       }
     } catch (error) {
       this.logger.error(`Restoration test failed: ${error.message}`);
