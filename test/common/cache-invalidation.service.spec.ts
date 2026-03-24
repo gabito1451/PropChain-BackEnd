@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
+
 import { ConfigService } from '@nestjs/config';
 import { CacheInvalidationService, InvalidationRule } from '../../src/common/cache/cache-invalidation.service';
 import { MultiLevelCacheService } from '../../src/common/cache/multi-level-cache.service';
@@ -9,8 +11,19 @@ describe('CacheInvalidationService', () => {
   let cacheService: jest.Mocked<MultiLevelCacheService>;
   let redisService: jest.Mocked<RedisService>;
   let configService: jest.Mocked<ConfigService>;
+  let loggerErrorSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    // Suppress ALL Logger error messages for this test suite
+    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    loggerErrorSpy.mockRestore();
+  });
 
   beforeEach(async () => {
+
     const mockCacheService = {
       get: jest.fn(),
       set: jest.fn(),
@@ -47,11 +60,17 @@ describe('CacheInvalidationService', () => {
     cacheService = module.get(MultiLevelCacheService);
     redisService = module.get(RedisService);
     configService = module.get(ConfigService);
+
+    // Suppress expected error logs in console
+    jest.spyOn((service as any).logger, 'error').mockImplementation(() => {});
   });
+
 
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+
 
   describe('initialization', () => {
     it('should initialize with default rules', () => {

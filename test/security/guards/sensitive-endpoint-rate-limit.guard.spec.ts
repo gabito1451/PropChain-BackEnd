@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
+
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { SensitiveEndpointRateLimitGuard } from '../../../src/security/guards/sensitive-endpoint-rate-limit.guard';
@@ -10,6 +12,16 @@ describe('SensitiveEndpointRateLimitGuard', () => {
   let rateLimitingService: jest.Mocked<RateLimitingService>;
   let ipBlockingService: jest.Mocked<IpBlockingService>;
   let reflector: jest.Mocked<Reflector>;
+  let loggerErrorSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    loggerErrorSpy.mockRestore();
+  });
+
 
   const mockExecutionContext = (requestData: any = {}) => {
     const request = {
@@ -68,9 +80,13 @@ describe('SensitiveEndpointRateLimitGuard', () => {
     reflector = module.get(Reflector);
   });
 
+
+
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+
 
   describe('canActivate', () => {
     it('should allow request when rate limit is not exceeded', async () => {

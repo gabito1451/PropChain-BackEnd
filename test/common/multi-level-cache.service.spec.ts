@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
+
 import { ConfigService } from '@nestjs/config';
 import { MultiLevelCacheService, MultiLevelCacheOptions } from '../../src/common/cache/multi-level-cache.service';
 import { RedisService } from '../../src/common/services/redis.service';
@@ -7,8 +9,19 @@ describe('MultiLevelCacheService', () => {
   let service: MultiLevelCacheService;
   let redisService: jest.Mocked<RedisService>;
   let configService: jest.Mocked<ConfigService>;
+  let loggerErrorSpy: jest.SpyInstance;
+
+
+  beforeAll(() => {
+    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    loggerErrorSpy.mockRestore();
+  });
 
   beforeEach(async () => {
+
     const mockRedisService = {
       get: jest.fn(),
       setex: jest.fn(),
@@ -47,10 +60,14 @@ describe('MultiLevelCacheService', () => {
     await service.onModuleInit();
   });
 
+
+
   afterEach(async () => {
     await service.onModuleDestroy();
     jest.clearAllMocks();
   });
+
+
 
   describe('get', () => {
     it('should return value from L1 cache if present and not expired', async () => {

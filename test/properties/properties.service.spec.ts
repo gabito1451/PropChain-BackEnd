@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
+
 import { PropertiesService } from '../../src/properties/properties.service';
 import { PrismaService } from '../../src/database/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +15,16 @@ describe('PropertiesService', () => {
   let service: PropertiesService;
   let prismaService: PrismaService;
   let configService: ConfigService;
+  let loggerErrorSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    loggerErrorSpy.mockRestore();
+  });
+
 
   const mockUser = {
     id: 'user_123',
@@ -94,12 +106,18 @@ describe('PropertiesService', () => {
     service = module.get<PropertiesService>(PropertiesService);
     prismaService = module.get<PrismaService>(PrismaService);
     configService = module.get<ConfigService>(ConfigService);
+
+    // Suppress expected error logs in console
+    jest.spyOn((service as any).logger, 'error').mockImplementation(() => {});
   });
+
 
   afterEach(() => {
     jest.clearAllMocks();
     mockCacheService.wrap.mockImplementation(async (_key, factory) => factory());
   });
+
+
 
   describe('create', () => {
     const createPropertyDto: CreatePropertyDto = {
