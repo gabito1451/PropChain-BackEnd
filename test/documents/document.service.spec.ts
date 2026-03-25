@@ -10,6 +10,7 @@ import {
   STORAGE_CONFIG,
   STORAGE_PROVIDER,
 } from '../../src/documents/document.service';
+import { MalwareScannerService } from '../../src/security/services/malware-scanner.service';
 
 const createMockFile = (
   buffer: Buffer,
@@ -61,6 +62,10 @@ describe('DocumentService', () => {
         DocumentService,
         { provide: STORAGE_CONFIG, useValue: config },
         { provide: STORAGE_PROVIDER, useValue: storageProvider },
+        {
+          provide: MalwareScannerService,
+          useValue: { scanBuffer: jest.fn().mockResolvedValue(true) },
+        },
       ],
     }).compile();
 
