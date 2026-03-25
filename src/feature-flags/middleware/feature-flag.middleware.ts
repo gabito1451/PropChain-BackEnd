@@ -105,7 +105,8 @@ export class FeatureFlagMiddleware implements NestMiddleware {
       }
 
       if (req.user.createdAt) {
-        context.customAttributes!.userAge = Date.now() - new Date(req.user.createdAt).getTime();
+        context.customAttributes!.userAge =
+          Date.now() - new Date(req.user.createdAt).getTime();
       }
     }
 
@@ -126,8 +127,8 @@ export class FeatureFlagMiddleware implements NestMiddleware {
   }
 
   private logFlagEvaluations(req: FeatureFlagRequest, results: any[]): void {
-    const enabledFlags = results.filter(r => r.enabled).map(r => r.flagKey);
-    const disabledFlags = results.filter(r => !r.enabled).map(r => r.flagKey);
+    const enabledFlags = results.filter((r) => r.enabled).map((r) => r.flagKey);
+    const disabledFlags = results.filter((r) => !r.enabled).map((r) => r.flagKey);
 
     if (enabledFlags.length > 0 || disabledFlags.length > 0) {
       this.logger.debug(
