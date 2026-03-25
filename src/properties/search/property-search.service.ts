@@ -1,10 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PropertyStatus } from '../dto/create-property.dto';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { PropertySearchDto } from '../dto/property-search.dto';
 import { SearchAnalyticsService } from './search-analytics.service';
-import { PropertyStatus as PrismaPropertyStatus } from '@prisma/client';
 
 @Injectable()
 export class PropertySearchService {
@@ -52,9 +49,9 @@ export class PropertySearchService {
     }
 
     // Normal search
-    return this.prisma.property.findMany({
+    return (this.prisma as any).property.findMany({
       where: {
-        status: status as PrismaPropertyStatus,
+        status,
         ...(location && { location: { contains: location, mode: 'insensitive' } }),
         ...(minPrice && { price: { gte: minPrice } }),
         ...(maxPrice && { price: { lte: maxPrice } }),
@@ -129,13 +126,13 @@ export class PropertySearchService {
     });
   }
 
-  private mapPropertyStatus(status: PropertyStatus): PrismaPropertyStatus {
-    const statusMap: Record<PropertyStatus, PrismaPropertyStatus> = {
-      [PropertyStatus.AVAILABLE]: 'LISTED' as PrismaPropertyStatus,
-      [PropertyStatus.PENDING]: 'PENDING' as PrismaPropertyStatus,
-      [PropertyStatus.SOLD]: 'SOLD' as PrismaPropertyStatus,
-      [PropertyStatus.RENTED]: 'SOLD' as PrismaPropertyStatus,
+  private mapPropertyStatus(status: PropertyStatus): string {
+    const statusMap: Record<PropertyStatus, string> = {
+      [PropertyStatus.AVAILABLE]: 'LISTED',
+      [PropertyStatus.PENDING]: 'PENDING',
+      [PropertyStatus.SOLD]: 'SOLD',
+      [PropertyStatus.RENTED]: 'SOLD',
     };
-    return statusMap[status] || ('DRAFT' as PrismaPropertyStatus);
+    return statusMap[status] || 'DRAFT';
   }
 }
