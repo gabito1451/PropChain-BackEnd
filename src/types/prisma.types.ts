@@ -36,6 +36,12 @@ export enum TokenType {
   REFRESH = 'REFRESH',
 }
 
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  AGENT = 'AGENT',
+}
+
 export namespace Prisma {
   export interface PropertyWhereInput extends Record<string, any> {}
   export interface PropertyOrderByWithRelationInput extends Record<string, any> {}

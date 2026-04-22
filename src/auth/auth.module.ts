@@ -10,8 +10,7 @@ import { ApiKeyAuthGuard } from './guards/api-key-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 
 @Module({
-  imports: [PrismaModule, UsersModule, SessionsModule],
-  imports: [PrismaModule, UsersModule, EmailModule],
+  imports: [PrismaModule, UsersModule, SessionsModule, EmailModule],
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard, ApiKeyAuthGuard, RolesGuard],
   exports: [AuthService, RolesGuard],

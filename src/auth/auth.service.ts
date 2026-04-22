@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiKey, TokenType, User } from '../types/prisma.types';
-import { Prisma } from '../types/prisma.types';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as jwt from 'jsonwebtoken';
@@ -41,7 +40,7 @@ import {
 } from './security.utils';
 import { AuthUserPayload } from './types/auth-user.type';
 
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../types/prisma.types';
 
 type JwtPayload = {
   sub: string;
@@ -88,7 +87,7 @@ export class AuthService {
       id: transaction.id,
       title: `${type.charAt(0).toUpperCase() + type.slice(1)} - ${transaction.id}`,
       description: `Amount: ${transaction.amount}, Status: ${transaction.status}`,
-      createdAt: transaction.createdAt,
+      timestamp: transaction.createdAt,
     }));
   }
 
@@ -707,7 +706,7 @@ export class AuthService {
       {
         sub: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role as UserRole,
         type: 'access',
         jti: accessJti,
       },
@@ -719,7 +718,7 @@ export class AuthService {
       {
         sub: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role as UserRole,
         type: 'refresh',
         jti: refreshJti,
       },
@@ -917,7 +916,7 @@ export class AuthService {
       if (historyEntries.length > 0) {
         await tx.passwordHistory.deleteMany({
           where: {
-            id: { in: historyEntries.map(entry => entry.id) },
+            id: { in: historyEntries.map((entry: any) => entry.id) },
           },
         });
       }

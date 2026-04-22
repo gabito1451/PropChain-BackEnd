@@ -157,7 +157,7 @@ export class SessionsService {
    * Get session by access token JTI
    */
   async getSessionByAccessTokenJti(accessTokenJti: string): Promise<SessionDto | null> {
-    const session = await this.prisma.session.findUnique({
+    const session = await this.prisma.session.findFirst({
       where: { accessTokenJti },
     });
 
