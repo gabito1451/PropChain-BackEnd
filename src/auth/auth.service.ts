@@ -692,7 +692,7 @@ export class AuthService {
     return {
       sub: apiKey.userId,
       email: apiKey.user.email,
-      role: apiKey.user.role,
+      role: apiKey.user.role as UserRole,
       type: 'api-key',
       apiKeyId: apiKey.id,
     };
