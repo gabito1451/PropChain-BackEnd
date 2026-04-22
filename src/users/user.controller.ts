@@ -167,4 +167,3 @@ export class UserController {
     return this.userService.unblockUser(id);
   }
 }
-

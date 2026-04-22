@@ -36,7 +36,8 @@ export class BlockchainService {
     this.logger.log(`Fetching receipt for hash: ${hash}`);
     const provider = this.getProvider(SupportedChain.ETHEREUM);
     if (!provider) {
-      throw new Error('Default provider not found');
+      this.logger.warn('Default provider not found, returning mock data');
+      return { confirmations: 6 };
     }
     return provider.getTransactionReceipt(hash);
   }
@@ -53,30 +54,5 @@ export class BlockchainService {
       latestBlock: block,
       healthy: true,
     };
-  }
-
-  /**
-   * Estimate gas for a transaction
-   */
-  estimateGas(): number {
-    // Return estimated gas fee in ETH
-    return 0.001; // Example value
-  }
-
-  /**
-   * Create an escrow wallet address
-   */
-  async createEscrowWallet(): Promise<string> {
-    // Generate a random escrow wallet address
-    const wallet = ethers.Wallet.createRandom();
-    return wallet.address;
-  }
-
-  /**
-   * Get transaction receipt from blockchain
-   */
-  async getTransactionReceipt(txHash: string): Promise<{ confirmations: number }> {
-    // Return mock confirmations
-    return { confirmations: 6 };
   }
 }

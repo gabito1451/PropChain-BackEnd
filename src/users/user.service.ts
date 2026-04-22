@@ -166,6 +166,7 @@ export class UserService {
     password: string | null;
     role: string;
     isVerified: boolean;
+    isBlocked: boolean;
     [key: string]: any;
   } | null> {
     return this.cacheService.wrap(

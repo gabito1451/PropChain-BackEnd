@@ -63,7 +63,7 @@ export class AuthController {
     schema: {
       properties: {
         message: { type: 'string', example: 'User registered successfully. Please check your email for verification.' },
-        user: { 
+        user: {
           type: 'object',
           properties: {
             id: { type: 'string', example: 'user_abc123' },
@@ -71,7 +71,7 @@ export class AuthController {
             firstName: { type: 'string', example: 'John' },
             lastName: { type: 'string', example: 'Doe' },
             isVerified: { type: 'boolean', example: false },
-          }
+          },
         },
       },
     },
