@@ -100,6 +100,12 @@ export class UserResponseDto {
   isActive: boolean;
 
   @ApiProperty({
+    description: 'Whether the user account is blocked',
+    example: false,
+  })
+  isBlocked: boolean;
+
+  @ApiProperty({
     description: 'User roles',
     example: ['user'],
     type: [String],

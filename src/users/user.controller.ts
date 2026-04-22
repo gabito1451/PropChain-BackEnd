@@ -23,6 +23,9 @@ import {
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RbacGuard } from '../auth/guards/rbac.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('users')
 @Controller({ path: 'users', version: '1' })
@@ -141,4 +144,27 @@ export class UserController {
   requestDataExport(@Param('id') id: string) {
     return this.userService.requestDataExport(id);
   }
+
+  @Post(':id/block')
+  @UseGuards(JwtAuthGuard, RbacGuard)
+  @Roles('users', 'block')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Block a user account' })
+  @ApiParam({ name: 'id', description: 'ID of the user to block' })
+  @ApiOkResponse({ description: 'User blocked successfully', type: UserResponseDto })
+  blockUser(@Param('id') id: string) {
+    return this.userService.blockUser(id);
+  }
+
+  @Post(':id/unblock')
+  @UseGuards(JwtAuthGuard, RbacGuard)
+  @Roles('users', 'unblock')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Unblock a user account' })
+  @ApiParam({ name: 'id', description: 'ID of the user to unblock' })
+  @ApiOkResponse({ description: 'User unblocked successfully', type: UserResponseDto })
+  unblockUser(@Param('id') id: string) {
+    return this.userService.unblockUser(id);
+  }
 }
+

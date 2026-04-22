@@ -5,6 +5,7 @@ import {
   TokenExpiredException,
   InvalidInputException,
   UserNotFoundException,
+  ForbiddenException,
 } from '../common/errors/custom.exceptions';
 import { UserService } from '../users/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -62,8 +63,12 @@ export class AuthService {
       const user = await this.userService.create(createUserDto);
       await this.sendVerificationEmail(user.id, user.email);
       this.logger.logAuth('User registration successful', { userId: user.id });
+      
+      const { password: _, ...sanitizedUser } = user as any;
+      
       return {
         message: 'User registered successfully. Please check your email for verification.',
+        user: sanitizedUser,
       };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -139,6 +144,12 @@ export class AuthService {
         }
         throw new InvalidCredentialsException();
       }
+      
+      if (user.isBlocked) {
+        this.logger.warn('Login attempt from blocked user', { userId: user.id });
+        throw new ForbiddenException('Your account has been blocked. Please contact support.');
+      }
+
 
       // successful login, clear attempts
       if (attemptsKey) {
@@ -210,6 +221,12 @@ export class AuthService {
         });
         throw new UserNotFoundException(payload.sub);
       }
+      
+      if (user.isBlocked) {
+        this.logger.warn('Token refresh attempt from blocked user', { userId: user.id });
+        throw new ForbiddenException('Your account has been blocked. Please contact support.');
+      }
+
 
       const refreshSessionData = await this.redisService.get(tokenRevocationRedisKeys.refreshSession(payload.rid));
       if (!refreshSessionData) {

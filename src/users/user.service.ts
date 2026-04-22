@@ -92,7 +92,9 @@ export class UserService {
    * ```
    */
   async create(createUserDto: CreateUserDto) {
-    const { email, password, walletAddress } = createUserDto;
+    const { email, password, walletAddress, firstName, lastName } = createUserDto;
+
+    // ... (rest of validation)
 
     // === PASSWORD STRENGTH VALIDATION ===
     // Ensures password meets security requirements:
@@ -133,6 +135,8 @@ export class UserService {
         email,
         password: hashedPassword,
         walletAddress,
+        firstName,
+        lastName,
         role: 'USER', // Default role
       },
     });
@@ -615,6 +619,32 @@ export class UserService {
       data: { exportRequestedAt: new Date() },
     });
     await this.invalidateUserReadCaches(userId);
+    return user;
+  }
+
+  /**
+   * Block a user account
+   */
+  async blockUser(userId: string) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isBlocked: true },
+    });
+    await this.invalidateUserReadCaches(userId);
+    this.logger.log(`User ${userId} blocked`);
+    return user;
+  }
+
+  /**
+   * Unblock a user account
+   */
+  async unblockUser(userId: string) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isBlocked: false },
+    });
+    await this.invalidateUserReadCaches(userId);
+    this.logger.log(`User ${userId} unblocked`);
     return user;
   }
 

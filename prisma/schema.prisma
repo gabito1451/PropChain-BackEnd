@@ -20,8 +20,11 @@ model User {
   walletAddress String?   @unique @map("wallet_address") // Unique index for wallet address
   role          UserRole  @default(USER)
   roleId        String?   @map("role_id")
+  firstName     String?   @map("first_name")
+  lastName      String?   @map("last_name")
   password      String?
   isVerified    Boolean   @default(false) @map("is_verified")
+  isBlocked     Boolean   @default(false) @map("is_blocked")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -57,6 +60,7 @@ model User {
   @@index([role]) // For filtering users by role
   @@index([createdAt]) // For sorting/filtering by creation date
   @@index([isVerified])
+  @@index([isBlocked])
   @@index([location])
   @@map("users")
 }
